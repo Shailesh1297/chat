@@ -2,8 +2,10 @@ package com.shailesh.chat.controllers;
 
 import com.shailesh.chat.models.Message;
 import com.shailesh.chat.models.SessionInfo;
+import com.shailesh.chat.models.SignalMessage;
 import com.shailesh.chat.services.MessageService;
 import com.shailesh.chat.services.SessionStore;
+import com.shailesh.chat.services.SignalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -30,6 +32,9 @@ public class ChatController {
     @Autowired
     MessageService messageService;
 
+    @Autowired
+    SignalService signalService;
+
     @MessageMapping("/all")
     @SendTo("/topic/all")
     public Message sendToAll(Message message) {
@@ -39,6 +44,12 @@ public class ChatController {
     @MessageMapping("/private")
     public void sendToPrivate(@Payload Message message) {
         this.messageService.notifyUser(message);
+    }
+
+
+    @MessageMapping("/signal")
+    public void webRtc(@Payload SignalMessage message) {
+        this.signalService.signalUser(message);
     }
 
     @MessageMapping("/actives")

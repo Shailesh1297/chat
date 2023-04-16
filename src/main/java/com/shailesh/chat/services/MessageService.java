@@ -20,19 +20,11 @@ public class MessageService {
 
     public void notifyUser(Message message) {
         String sessionId = sessionStore.getSessionId(message.getRecipientId());
-        simpMessagingTemplate.convertAndSendToUser(sessionId,"/topic/private",message,createHeader(sessionId));
+        simpMessagingTemplate.convertAndSendToUser(sessionId,"/topic/private",message,sessionStore.createHeader(sessionId));
     }
 
     public void sendActiveUsers() {
-        simpMessagingTemplate.convertAndSend("/topic/users",sessionStore.getUserSessionInfoMap(),createHeader(null));
+        simpMessagingTemplate.convertAndSend("/topic/users",sessionStore.getUserSessionInfoMap(),sessionStore.createHeader(null));
     }
 
-    private MessageHeaders createHeader(String sessionId) {
-        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
-        if(!isNull(sessionId)) {
-            headerAccessor.setSessionId(sessionId);
-        }
-        headerAccessor.setLeaveMutable(true);
-        return headerAccessor.getMessageHeaders();
-    }
 }
